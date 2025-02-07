@@ -50,8 +50,8 @@ class InstructorApp:
     def fetch_students_from_db(self):
         conn = sqlite3.connect('students.db')
         cursor = conn.cursor()
-        # تعديل الاستعلام لاستخراج الأعمدة الصحيحة
-        cursor.execute("SELECT name, email, phone_number FROM students")  # تم حذف 'course'
+
+        cursor.execute("SELECT name, email, phone_number FROM students")
         students = cursor.fetchall()
         conn.close()
         return students
@@ -59,15 +59,15 @@ class InstructorApp:
     def show_student_details(self):
         self.clear_frame()
 
-        # إعداد canvas و scrollbar للتمرير
+
         canvas = tk.Canvas(self.root, bg="#f0f8ff")
         scrollbar = tk.Scrollbar(self.root, orient="vertical", command=canvas.yview)
         canvas.configure(yscrollcommand=scrollbar.set)
 
-        # إنشاء إطار لتغطية التفاصيل
+
         details_frame = tk.Frame(canvas, bg="#f0f8ff", padx=20, pady=20)
 
-        # إضافة التفاصيل
+
         students = self.fetch_students_from_db()
 
         if not students:
@@ -77,9 +77,9 @@ class InstructorApp:
             tk.Label(details_frame, text=f"Total Students: {len(students)}", font=("Arial", 16, "bold"),
                      bg="#f0f8ff").pack(pady=20, anchor="center")
 
-            # إضافة تفاصيل كل طالب
+
             for student in students:
-                # محاذاة النص في المركز
+
                 tk.Label(details_frame, text=f"Name: {student[0]}", font=("Arial", 14), bg="#f0f8ff", width=30,
                          anchor="center").pack(pady=5)
                 tk.Label(details_frame, text=f"Email: {student[1]}", font=("Arial", 14), bg="#f0f8ff", width=30,
@@ -87,30 +87,30 @@ class InstructorApp:
                 tk.Label(details_frame, text=f"Phone Number: {student[2]}", font=("Arial", 14), bg="#f0f8ff", width=30,
                          anchor="center").pack(pady=5)
 
-                # خط يفصل بين كل طالب وآخر
+
                 tk.Label(details_frame, text="-" * 50, font=("Arial", 10), bg="#f0f8ff").pack(pady=5)
 
-            # إضافة زر العودة إلى الصفحة الرئيسية في الأسفل
+
             button = tk.Button(details_frame, text="Back to Home", command=self.show_home_page, bg="#ff7f50",
                                fg="white",
                                font=("Arial", 14, "bold"))
             button.pack(pady=20)
 
-        # إضافة التفاصيل إلى canvas و scrollbar
+
         canvas.create_window((0, 0), window=details_frame, anchor="nw")
         scrollbar.pack(side="right", fill="y")
         canvas.pack(side="left", fill="both", expand=True)
 
-        # تحديث نطاق التمرير
+
         details_frame.update_idletasks()
         canvas.config(scrollregion=canvas.bbox("all"))
 
-        # إضافة padding لضمان محاذاة جيدة
-        canvas.pack(fill="both", expand=True)  # تأكد من أن canvas يعرض بشكل كامل في وسط الصفحة
+
+        canvas.pack(fill="both", expand=True)
 
     def show_home_page(self):
         self.clear_frame()
-      #  self.add_profile_image()
+
         self.buttons_section()
 
     def show_instructor_info(self):
@@ -149,7 +149,7 @@ class InstructorApp:
 
         ans = ins.get_instructor_data()
 
-        # إنشاء المدخلات مع القيم الافتراضية
+
         name_entry = self.create_entry(update_window, "Name:", ans[0])
         email_entry = self.create_entry(update_window, "Email:", ans[1])
         password_entry = self.create_entry(update_window, "Password:", ans[3], show="*")
@@ -161,7 +161,7 @@ class InstructorApp:
             password = password_entry.get()
             phone = phone_entry.get()
 
-            # التحقق من صحة المدخلات
+
             if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
                 messagebox.showerror("Error", "Invalid email format!")
                 return
@@ -178,11 +178,11 @@ class InstructorApp:
 
             ins.update_instructor_info( name, email, phone, password)
 
-            # إغلاق نافذة التحديث
+
             messagebox.showinfo("Success", "Information updated successfully!")
             update_window.destroy()
 
-            # إعادة عرض المعلومات المحدثة
+
             self.show_instructor_info()
 
         tk.Button(update_window, text="Save Changes", command=validate_and_update, bg="#4CAF50", fg="white",
@@ -197,18 +197,6 @@ class InstructorApp:
         entry.pack(pady=5)
         return entry
 
-    def add_profile_image(self):
-        profile_image = Image.open(r"C:\Users\asd\Pictures\Screenshots\Screenshot 2024-12-04 140202.png")
-        profile_image = profile_image.resize((100, 100))
-        profile_photo = ImageTk.PhotoImage(profile_image)
-
-        profile_image_label = tk.Label(self.root, image=profile_photo, bg="#eaf7ff")
-        profile_image_label.image = profile_photo
-        profile_image_label.place(relx=0.05, rely=0.05, anchor="center")
-
-        name_label = tk.Label(self.root, text=self.instructor_data["name"], font=("Arial", 12, "bold"), bg="#eaf7ff",
-                              fg="red")
-        name_label.place(relx=0.05, rely=0.15, anchor="center")
 
     def buttons_section(self):
 
@@ -217,7 +205,7 @@ class InstructorApp:
         button_style = {"font": ("Comic Sans MS", 12, "bold"), "width": 40, "bg": "#ECF0F1", "fg": "blue"}
         tk.Label(self.root, text="☸ Home Page ☸", font=("Comic Sans MS", 20, "bold"), bg="#f8c9d8").pack(
             pady=20)
-        #button_style = {"font": ("Comic Sans MS", 12, "bold"), "width": 40, "bg": "#2C3E50", "fg": "white"}
+
 
         tk.Button(buttons_frame, text="My Profile", **button_style, command=self.show_instructor_info).pack(pady=10)
         tk.Button(buttons_frame, text="My Courses", **button_style, command=self.show_my_courses).pack(pady=10)
@@ -227,7 +215,7 @@ class InstructorApp:
         tk.Button(buttons_frame, text="Back to Role section", **button_style, command=self.student_dashboard).pack( pady=10)
 
     def student_dashboard(self):
-        #ا يتم تمرير نافذة جديدة لفتح واجهة المدرس
+
         self.student.role_selection_screen()
 
     def add_course(self):
@@ -238,17 +226,17 @@ class InstructorApp:
 
         tk.Label(add_course_window, text="Add New Course", font=("Arial", 16, "bold"), bg="#f0f8ff").pack(pady=20)
 
-        # حقل اسم الكورس
+
         tk.Label(add_course_window, text="Course Name:", font=("Arial", 12), bg="#f0f8ff").pack(pady=5)
         course_name_entry = tk.Entry(add_course_window, width=30)
         course_name_entry.pack(pady=5)
 
-        # حقل رابط الفيديو
+
         tk.Label(add_course_window, text="Video Link:", font=("Arial", 12), bg="#f0f8ff").pack(pady=5)
         video_link_entry = tk.Entry(add_course_window, width=30)
         video_link_entry.pack(pady=5)
 
-        # حقل الـ PDF
+
         tk.Label(add_course_window, text="PDF Link:", font=("Arial", 12), bg="#f0f8ff").pack(pady=5)
         pdf_link_entry = tk.Entry(add_course_window, width=30)
         pdf_link_entry.pack(pady=5)
@@ -269,37 +257,37 @@ class InstructorApp:
                 return
 
             try:
-                # إضافة الكورس إلى قاعدة البيانات وإرجاع ID الخاص به
+
                 course_id = self.db.add_course(course_name, video_link, pdf_link)
 
                 messagebox.showinfo("Success", "Course added successfully!")
 
-                # تحديث واجهة الكورسات بعد إضافة الكورس
-                add_course_window.destroy()  # إغلاق نافذة الإضافة
-                self.show_my_courses()  # تحديث الكورسات المعروضة
 
-                # فتح نافذة إضافة الكويز
+                add_course_window.destroy()
+                self.show_my_courses()
+
+
                 self.add_quiz_window(course_id)
 
             except Exception as e:
                 messagebox.showerror("Error", f"Failed to add course: {e}")
 
-                # زر لفتح نافذة إضافة الكويز
+
                 def open_add_quiz_window():
                     self.add_quiz_window(course_id)
 
-                # زر إضافة الكويز بعد نجاح إضافة الكورس
+
                 tk.Button(add_course_window, text="Add Quiz", font=("Arial", 12), command=open_add_quiz_window).pack(
                     pady=20)
 
             except Exception as e:
                 messagebox.showerror("Error", f"Failed to add course: {e}")
 
-        # زر إضافة الكورس
+
         tk.Button(add_course_window, text="Add Course", font=("Arial", 12), command=validate_and_add_course).pack(
             pady=20)
 
-    # نافذة إضافة الكويز
+
     def add_quiz_window(self, course_id):
         add_quiz_window = tk.Toplevel(self.root)
         add_quiz_window.title("Add Quiz")
@@ -316,7 +304,7 @@ class InstructorApp:
         correct_answer_entry = tk.Entry(add_quiz_window, width=30)
         correct_answer_entry.pack(pady=5)
 
-        # دالة لإضافة الكويز
+
         def validate_and_add_quiz():
             question = question_entry.get()
             correct_answer = correct_answer_entry.get()
@@ -326,7 +314,7 @@ class InstructorApp:
                 return
 
             try:
-                # إضافة الكويز إلى قاعدة البيانات
+
                 self.db.add_quiz(course_id, question, correct_answer)
                 messagebox.showinfo("Success", "Quiz added successfully!")
                 add_quiz_window.destroy()
@@ -359,7 +347,7 @@ class InstructorApp:
         for quiz in quizzes:
             quiz_id, question = quiz
 
-            # عرض كل سؤال مع إجابة الطالب ونتيجتها
+
             self.db.cursor.execute('''SELECT student_answer, is_answer_correct FROM quizzes WHERE id = ?''',
                                    (quiz_id,))
             result = self.db.cursor.fetchone()
@@ -371,7 +359,7 @@ class InstructorApp:
                      bg="#f0f8ff").pack(
                 pady=5)
 
-            # عرض إذا كانت الإجابة صحيحة أم لا
+
             if is_answer_correct == 1:
                 tk.Label(quiz_results_window, text="Correct", font=("Arial", 12, "bold"), fg="green",
                          bg="#f0f8ff").pack(pady=5)
@@ -382,11 +370,11 @@ class InstructorApp:
     def show_my_courses(self):
         self.clear_frame()
 
-        # عنوان الكورسات
+
         tk.Label(self.root, text="📚 My Courses 📚", font=("Arial", 20), bg="#f0f8ff", fg="#003366").pack(pady=20)
 
         try:
-            courses = db.get_courses()  # جلب الكورسات من قاعدة البيانات
+            courses = db.get_courses()
             if not courses:
                 tk.Label(self.root, text="No courses available.", font=("Arial", 14), bg="#f0f8ff", fg="red").pack(
                     pady=10)
@@ -394,15 +382,15 @@ class InstructorApp:
                 for course in courses:
                     course_id, course_name, video_link, pdf_link = course
 
-                    # إطار لعرض الكورس
+
                     course_frame = tk.Frame(self.root, bg="#f0f8ff", padx=10, pady=10)
                     course_frame.pack(fill="x", padx=20, pady=5)
 
-                    # عرض اسم الكورس
+
                     tk.Label(course_frame, text=course_name, font=("Arial", 14, "bold"), bg="#f0f8ff").pack(side="left",
                                                                                                             padx=10)
 
-                    # أزرار تعديل وحذف وعرض الكورس
+
                     tk.Button(course_frame, text="Edit", command=lambda c_id=course_id: self.edit_course(c_id)).pack(
                         side="left", padx=10)
                     tk.Button(course_frame, text="Delete",
@@ -410,7 +398,7 @@ class InstructorApp:
                     tk.Button(course_frame, text="View Course", command=lambda c_id=course_id: self.view_course(c_id),
                               bg="#4CAF50", fg="white", font=("Arial", 10, "bold")).pack(side="left", padx=10)
 
-                    # زر عرض الكويزات
+
                     tk.Button(course_frame, text="View Quizzes", command=lambda c_id=course_id: self.show_quizzes(c_id),
                               bg="#2196F3", fg="white", font=("Arial", 10, "bold")).pack(side="left", padx=10)
 
@@ -418,11 +406,11 @@ class InstructorApp:
             tk.Label(self.root, text=f"Error loading courses: {e}", font=("Arial", 14), bg="#f0f8ff", fg="red").pack(
                 pady=10)
 
-        # زر العودة إلى الصفحة الرئيسية
+
         tk.Button(self.root, text="Back to Home", command=self.show_home_page, bg="#ff7f50", fg="white",
                   font=("Arial", 14, "bold")).pack(pady=20)
 
-        # زر إضافة كورس جديد
+
         tk.Button(self.root, text="Add New Course", command=self.add_course, bg="#4CAF50", fg="white",
                   font=("Arial", 14, "bold")).pack(pady=10)
     def edit_course(self, course_id):
@@ -439,13 +427,13 @@ class InstructorApp:
 
         tk.Label(edit_window, text="Edit Course Details", font=("Arial", 16, "bold"), bg="#f0f8ff").pack(pady=20)
 
-        # حقل اسم الكورس
+
         tk.Label(edit_window, text="Course Name:", font=("Arial", 14), bg="#f0f8ff").pack(pady=5)
         course_name_entry = tk.Entry(edit_window, width=30)
         course_name_entry.insert(0, course[1])  # اسم الكورس
         course_name_entry.pack(pady=5)
 
-        # حقل رابط الفيديو
+
         tk.Label(edit_window, text="Video Link:", font=("Arial", 14), bg="#f0f8ff").pack(pady=5)
         video_link_entry = tk.Entry(edit_window, width=30)
         video_link_entry.insert(0, course[2])  # رابط الفيديو
@@ -476,28 +464,28 @@ class InstructorApp:
         tk.Button(edit_window, text="Update Course", command=update_course, bg="#4CAF50", fg="white",
                   font=("Arial", 12, "bold")).pack(pady=20)
 
-        # زر إغلاق النافذة
+
         tk.Button(edit_window, text="Cancel", command=edit_window.destroy, bg="#f44336", fg="white",
                   font=("Arial", 12, "bold")).pack(pady=5)
 
-    # دالة لحذف الكورس
+
     def delete_courses(self, course_id):
         confirm = messagebox.askyesno("Confirm Deletion", "Are you sure you want to delete this course?")
         if confirm:
             try:
                 db.delete_course(course_id)
                 messagebox.showinfo("Success", "Course deleted successfully!")
-                self.show_my_courses()  # تحديث عرض الكورسات بعد الحذف
+                self.show_my_courses()
             except Exception as e:
                 messagebox.showerror("Error", f"Failed to delete course: {e}")
-    # دالة لعرض تفاصيل الكورس عند الضغط على View
+
     def view_course(self, course_id):
-        course = db.get_course_by_id(course_id)  # جلب تفاصيل الكورس
+        course = db.get_course_by_id(course_id)
         if not course:
             messagebox.showerror("Error", "Course not found!")
             return
 
-        if isinstance(course, tuple):  # تأكد أن course هو tuple وليس int
+        if isinstance(course, tuple):
             view_window = tk.Toplevel(self.root)
             view_window.title("View Course Details")
             view_window.geometry("400x600")
@@ -508,11 +496,11 @@ class InstructorApp:
             tk.Label(view_window, text=f"Course Name: {course[1]}", font=("Arial", 12, "bold"), bg="#f0f8ff").pack(
                 pady=10)
 
-            if course[2]:  # رابط الفيديو
+            if course[2]:
                 tk.Button(view_window, text="Open Video Link", command=lambda: webbrowser.open(course[2]), bg="#4CAF50",
                           fg="white", font=("Arial", 12, "bold")).pack(pady=10)
 
-            if course[3]:  # رابط الـ PDF
+            if course[3]:
                 tk.Button(view_window, text="Open PDF Link", command=lambda: webbrowser.open(course[3]), bg="#4CAF50",
                           fg="white", font=("Arial", 12, "bold")).pack(pady=10)
 
@@ -522,7 +510,7 @@ class InstructorApp:
                       font=("Arial", 12, "bold")).pack(pady=20)
 
     def show_quizzes(self, course_id):
-        quizzes = db.get_quizzes(course_id)  # جلب الكويزات من قاعدة البيانات
+        quizzes = db.get_quizzes(course_id)
         if not quizzes:
             messagebox.showinfo("Info", "No quizzes available for this course.")
             return
@@ -542,7 +530,7 @@ class InstructorApp:
 
             tk.Label(frame, text=f"Question: {question}", font=("Arial", 12), bg="#e6f7ff").pack(anchor="w", pady=5)
 
-            # جلب الإجابة الصحيحة من قاعدة البيانات
+
             correct_answer = db.get_correct_answer(quiz_id)
 
             tk.Label(frame, text=f"Correct Answer: {correct_answer}", font=("Arial", 12, "bold"), bg="#e6f7ff",
@@ -551,23 +539,23 @@ class InstructorApp:
         tk.Button(quizzes_window, text="Close", command=quizzes_window.destroy, bg="red", fg="white",
                   font=("Arial", 12, "bold")).pack(pady=20)
 
-    # دالة لتعديل الكورس
+
 
 
 
     def respond_to_students(self):
-        # الاتصال بقاعدة البيانات وجلب الاستفسارات
+
         queries_window = tk.Toplevel()
         queries_window.title("Student Queries")
         queries_window.geometry("500x400")
         queries_window.configure(bg="#ECF0F1")
 
-        # جلب الاستفسارات التي لم يتم الرد عليها من قاعدة البيانات
+
 
 
         queries = database_query.get_unanswered_queries()
 
-        # عرض الاستفسارات التي لم يتم الرد عليها
+
         for query in queries:
             query_frame = tk.Frame(queries_window, bg="#ffcccc")
             query_frame.pack(pady=10, padx=20, fill="x")
@@ -578,31 +566,31 @@ class InstructorApp:
                      fg="#660000").pack()
             tk.Label(query_frame, text=f"Query: {query_text}", font=("Arial", 10), bg="#ffcccc", fg="#660000").pack()
 
-            # حقل إدخال الرد
+
             response_entry = tk.Entry(query_frame, width=40)
             response_entry.pack(pady=5)
 
-            # دالة لإضافة الرد وتحديث قاعدة البيانات
+
             def respond(query=query, entry=response_entry, frame=query_frame):
                 response_text = entry.get()
                 if response_text:
-                    # تحديث الرد في قاعدة البيانات
+
                     database_query.update_response(query[1], response_text)
                     messagebox.showinfo("Success", "Response added successfully!")
 
-                    # مسح حقل الإدخال (المربع الذي يحتوي على الرد)
-                    entry.delete(0, tk.END)  # مسح محتوى الحقل النصي
 
-                    # إزالة الإطار الخاص بالاستفسار بعد الرد
-                # frame.pack_forget()  # إزالة الاستفسار من واجهة المستخدم بعد الرد
+                    entry.delete(0, tk.END)
+
+
+
 
                 else:
                     messagebox.showerror("Error", "Please enter a response.")
 
-            # زر الرد
+
             tk.Button(query_frame, text="Respond", command=respond, bg="#ff3333", fg="white").pack(pady=10)
 
-        # زر غلق النافذة
+
         tk.Button(queries_window, text="Close", command=queries_window.destroy, bg="#ff3333", fg="white").pack(pady=20)
 
 

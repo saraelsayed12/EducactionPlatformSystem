@@ -20,7 +20,7 @@ def add_query(student_name, query):
     c.execute('''
         INSERT INTO queries (student_name, query, response) 
         VALUES (?, ?, ?)
-    ''', (student_name, query, None))  # الاستفسار يبدأ بدون رد
+    ''', (student_name, query, None))
     conn.commit()
     conn.close()
 

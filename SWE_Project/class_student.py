@@ -23,7 +23,7 @@ class EducationalPlatform:
         self.root = root
         self.root.title("Educational Platform")
         self.root.geometry("800x600")
-        self.root.configure(bg="#f8c9d8")  # Changing background color to pink
+        self.root.configure(bg="#f8c9d8")
         self.db = CoursesDatabase()
         self.db_name = 'students.db'
 
@@ -37,14 +37,13 @@ class EducationalPlatform:
 
     def create_student_table(self):
 
-        """Ensure the students table exists in the database"""
         conn = sqlite3.connect(self.db_name)
         c = conn.cursor()
         c.execute('''
         CREATE TABLE IF NOT EXISTS students (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT,
-            email TEXT UNIQUE,  -- استخدم UNIQUE بدلاً من PRIMARY KEY هنا
+            email TEXT UNIQUE,
             phone_number TEXT,
             password TEXT
         )
@@ -56,12 +55,12 @@ class EducationalPlatform:
         conn = sqlite3.connect('students.db')
         c = conn.cursor()
 
-        # التحقق إذا كانت هناك بيانات جديدة للتحديث
+
         if not any([new_name, email, phone, password]):
             print("No data to update.")
             return
 
-        # التحقق من وجود الطالب بناءً على الاسم
+
         c.execute('SELECT * FROM students WHERE name = ?', (name,))
         current_data = c.fetchone()
 
@@ -70,13 +69,13 @@ class EducationalPlatform:
             conn.close()
             return
 
-        # تحديث القيم
+
         updated_name = new_name if new_name else current_data[0]
         updated_email = email if email else current_data[1]
         updated_phone = phone if phone else current_data[2]
         updated_password = password if password else current_data[3]
 
-        # تحديث بيانات الطالب في قاعدة البيانات
+
         try:
             c.execute('''
                 UPDATE students 
@@ -104,12 +103,12 @@ class EducationalPlatform:
         tk.Label(self.root, text="☸ Welcome to the platform ☸", font=("Comic Sans MS", 20, "bold"), bg="gold",
                  fg="blue").pack(pady=50)
 
-        # استخدام pack للأزرار بعد العنوان مباشرة
+
         tk.Button(self.root, text="Student", **button_style, command=self.login_screen).pack(pady=20)
         tk.Button(self.root, text="Instructor", **button_style, command=self.login_screen_ins).pack(pady=20)
 
     def instructor_dashboard(self):
-        class_instructorApp.InstructorApp(self.root)  # هنا يتم تمرير نافذة جديدة لفتح واجهة المدرس
+        class_instructorApp.InstructorApp(self.root)
 
     def login_screen_ins(self):
         self.clear_screen()
@@ -128,7 +127,7 @@ class EducationalPlatform:
         self.password_entry.pack(pady=5)
 
         tk.Button(self.root, text="Login", command=self.login_ins, bg="#ff0000", fg="white", width=15).pack(
-            pady=10)  # تغيير لون الزر إلى الأحمر
+            pady=10)
 
         tk.Button(self.root, text="Back to Role section", command=self.role_selection_screen, bg="#ff0000", fg="white",
                   width=15).pack(pady=10)
@@ -199,7 +198,7 @@ class EducationalPlatform:
             messagebox.showerror("Register", "Passwords do not match.")
             return
 
-            # Check if the email is already registered in the database
+
         conn = sqlite3.connect(self.db_name)
         c = conn.cursor()
         c.execute('SELECT * FROM students WHERE email = ?', (email,))
@@ -208,13 +207,13 @@ class EducationalPlatform:
         if existing_user:
             messagebox.showerror("Register", "Email already registered.")
         else:
-            # Register the new user in the database
+
             c.execute('''INSERT INTO students (name, email, phone_number, password) 
                             VALUES (?, ?, ?, ?)''', (name, email, phone_number, password))
             conn.commit()
             messagebox.showinfo("Register", "Registration successful!")
             self.login_screen()
-    # دالة تسجيل الدخول
+
     def login(self):
         email = self.email_entry.get()
         password = self.password_entry.get()
@@ -357,7 +356,7 @@ class EducationalPlatform:
 
         tk.Label(self.root, text="Available Courses", font=("Arial", 20), bg="#f8c9d8").pack(pady=20)
 
-        courses = self.db.get_courses()  # استرجاع الكورسات من قاعدة البيانات
+        courses = self.db.get_courses()
 
         for course in courses:
             course_id, course_name, video_link, pdf_link = course
@@ -370,32 +369,30 @@ class EducationalPlatform:
     def view_course_details(self, course_id):
         self.clear_screen()
 
-        # استرجاع بيانات الكورس من قاعدة البيانات
+
         course = self.db.get_course_by_id(course_id)
         if not course:
             tk.Label(self.root, text="Course not found", font=("Arial", 18), bg="#f8c9d8").pack(pady=20)
             return
 
-        # فك تجميع القيم
+
         course_id, course_name, video_link, pdf_link = course
 
         tk.Label(self.root, text=f"Course: {course_name}", font=("Arial", 18), bg="#f8c9d8").pack(pady=20)
 
-        # زر مشاهدة الفيديو
         if video_link:
             tk.Button(self.root, text="View Video", command=lambda: self.view_video(video_link), bg="#ff0000",
                       fg="white", width=20).pack(pady=5)
         else:
             tk.Label(self.root, text="No video available", font=("Arial", 12), bg="#f8c9d8").pack(pady=5)
 
-        # زر تحميل PDF
         if pdf_link:
             tk.Button(self.root, text="View PDF", command=lambda: self.view_pdf(pdf_link), bg="#ff0000", fg="white",
                       width=20).pack(pady=5)
         else:
             tk.Label(self.root, text="No PDF available", font=("Arial", 12), bg="#f8c9d8").pack(pady=5)
 
-        # عرض الكويزات (إذا كانت موجودة)
+
         quizzes = self.db.get_quizzes(course_id)
         if quizzes:
             tk.Button(self.root, text="Take Quiz", command=lambda: self.take_quiz(course_id), bg="#ff0000", fg="white",
@@ -410,9 +407,9 @@ class EducationalPlatform:
     def take_quiz(self, course_id):
         self.clear_screen()
 
-        # استرجاع أسئلة الكويز من قاعدة البيانات
+
         quizzes = self.db.get_quizzes(course_id)
-        print("Fetched quizzes:", quizzes)  # إضافة هذه السطر للتحقق من الأسئلة
+        print("Fetched quizzes:", quizzes)
 
         tk.Label(self.root, text=f"Quiz for Course ID: {course_id}", font=("Arial", 18), bg="#f8c9d8").pack(pady=20)
 
@@ -438,11 +435,11 @@ class EducationalPlatform:
         for question, (quiz_id, answer_var) in self.quiz_answers.items():
             student_answer = answer_var.get().strip()
             if student_answer:
-                # إرسال الإجابة إلى قاعدة البيانات
-                student_id = 1  # افتراضياً، يجب أن يتم تمرير معرف الطالب الفعلي
+
+                student_id = 1
                 self.db.submit_answer(quiz_id, student_id, student_answer)
 
-                # استرجاع الإجابة الصحيحة من قاعدة البيانات
+
                 correct_answer = self.db.get_correct_answer(quiz_id)
                 if student_answer.lower() == correct_answer.lower():
                     score += 1
@@ -452,11 +449,11 @@ class EducationalPlatform:
 
     def view_video(self, video_link):
         if video_link:
-            webbrowser.open(video_link)  # فتح الرابط في المتصفح الافتراضي
+            webbrowser.open(video_link)
 
     def view_pdf(self, pdf_link):
         if pdf_link:
-            webbrowser.open(pdf_link)  # فتح الرابط في المتصفح الافتراضي
+            webbrowser.open(pdf_link)
 
 
     def contact_instructor(self):
@@ -483,7 +480,7 @@ class EducationalPlatform:
 
             database_query.add_query(self.student_details[1], message)
             messagebox.showinfo("Success", "Your message has been sent!")
-            self.message_entry.delete(0, tk.END)  # تفريغ حقل الإدخال
+            self.message_entry.delete(0, tk.END)
         else:
             messagebox.showerror("Error", "Please enter a message before sending.")
 
@@ -514,8 +511,3 @@ class EducationalPlatform:
             widget.destroy()
 
 
-# Main execution
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = EducationalPlatform(root)
-    root.mainloop()

@@ -22,7 +22,7 @@ def add_query(instructor_name, email, phone, password):
     c.execute('''
         INSERT INTO queries (instructor_name, email, phone, password) 
         VALUES (?, ?, ?, ?)
-    ''', (instructor_name, email, phone, password))  # الاستفسار يبدأ بدون رد
+    ''', (instructor_name, email, phone, password))
     conn.commit()
     conn.close()
 

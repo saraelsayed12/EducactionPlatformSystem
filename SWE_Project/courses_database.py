@@ -4,13 +4,13 @@ class CoursesDatabase:
     def __init__(self, db_name="courses.db"):
         self.connection = sqlite3.connect(db_name)
         self.cursor = self.connection.cursor()
-        self.cursor.execute('PRAGMA foreign_keys = ON;')  # تفعيل العلاقات الخارجية
+        self.cursor.execute('PRAGMA foreign_keys = ON;')
         self.create_table()
 
         self.cursor.execute('PRAGMA foreign_keys = ON;')
 
     def create_table(self):
-        # إنشاء جدول للكورسات إذا لم يكن موجودًا
+
         self.cursor.execute('''
         CREATE TABLE IF NOT EXISTS courses (
             id INTEGER PRIMARY KEY,
@@ -20,7 +20,7 @@ class CoursesDatabase:
         )
         ''')
 
-        # إنشاء جدول للكويزات إذا لم يكن موجودًا
+
         self.cursor.execute('''
         CREATE TABLE IF NOT EXISTS quizzes (
             id INTEGER PRIMARY KEY,
@@ -46,13 +46,13 @@ class CoursesDatabase:
         self.connection.commit()
 
     def add_course(self, course_name, video_link=None, pdf_link=None):
-        # إضافة كورس جديد مع الحقول المحددة
+
         self.cursor.execute(''' 
             INSERT INTO courses (course_name, video_link, pdf_link)
             VALUES (?, ?, ?)
         ''', (course_name, video_link or '', pdf_link or ''))
         self.connection.commit()
-        # إرجاع ID الكورس الذي تم إنشاؤه
+
         return self.cursor.lastrowid
 
     def add_quiz(self, course_id, question, correct_answer):
@@ -60,7 +60,7 @@ class CoursesDatabase:
             print("Error: course_id cannot be None.")
             return
         try:
-            # إضافة الكويز
+
             self.cursor.execute('''
                 INSERT INTO quizzes (course_id, question, correct_answer)
                 VALUES (?, ?, ?)
@@ -73,29 +73,28 @@ class CoursesDatabase:
 
     def submit_answer(self, quiz_id, student_id, student_answer):
         try:
-            # جلب الإجابة الصحيحة للسؤال
+
             self.cursor.execute("SELECT correct_answer FROM quizzes WHERE id = ?", (quiz_id,))
             correct_answer = self.cursor.fetchone()
 
             if correct_answer:
                 correct_answer = correct_answer[0]
-                # التحقق من صحة الإجابة
                 is_correct = 1 if student_answer.strip().lower() == correct_answer.strip().lower() else 0
 
-                # إدخال الإجابة في جدول quiz_answers مع إضافة الدرجة
+
                 self.cursor.execute('''
                     INSERT INTO quiz_answers (quiz_id, student_id, student_answer, is_answer_correct)
                     VALUES (?, ?, ?, ?)
                 ''', (quiz_id, student_id, student_answer, is_correct))
                 self.connection.commit()
 
-                # عرض النتيجة
+
                 if is_correct:
                     print("الإجابة صحيحة!")
                 else:
                     print("الإجابة خاطئة!")
             else:
-                print("الكويز غير موجود.")
+                print("Not Exist")
                 return
         except Exception as e:
             print(f"Error submitting answer: {e}")
@@ -111,7 +110,7 @@ class CoursesDatabase:
              return "Error"
 
     def get_courses(self):
-        # استرجاع جميع الكورسات
+
         self.cursor.execute(
             "SELECT id, course_name, video_link, pdf_link FROM courses")
         courses = self.cursor.fetchall()
@@ -129,7 +128,7 @@ class CoursesDatabase:
         if pdf_link is not None:
             query += 'pdf_link = ?, '
             params.append(pdf_link)
-        query = query.rstrip(', ')  # إزالة الفاصلة الزائدة
+        query = query.rstrip(', ')
         query += ' WHERE id = ?'
         params.append(course_id)
 
@@ -142,23 +141,23 @@ class CoursesDatabase:
             self.connection.rollback()
 
     def delete_course(self, course_id):
-        # التحقق من وجود الكورس
+
         self.cursor.execute('SELECT * FROM courses WHERE id = ?', (course_id,))
         course = self.cursor.fetchone()
         if not course:
             print("Error: Course not found.")
             return
 
-        # حذف الكويزات المرتبطة بالكورس
+
         self.cursor.execute('DELETE FROM quizzes WHERE course_id = ?', (course_id,))
         self.connection.commit()
 
-        # حذف الكورس بعد حذف الكويزات
+
         self.cursor.execute('DELETE FROM courses WHERE id = ?', (course_id,))
         self.connection.commit()
         print("Course and related quizzes deleted successfully.")
 
-        # حذف الكورس إذا كان موجودًا
+
         self.cursor.execute('DELETE FROM courses WHERE id = ?', (course_id,))
         self.connection.commit()
         print("Course deleted successfully.")
@@ -166,7 +165,7 @@ class CoursesDatabase:
     def get_course_by_id(self, course_id):
         try:
             self.cursor.execute("SELECT * FROM courses WHERE id=?", (course_id,))
-            course = self.cursor.fetchone()  # تأكد من استخدام fetchone لإرجاع صف واحد
+            course = self.cursor.fetchone()
             return course
         except Exception as e:
             print(f"Error fetching course by ID: {e}")
@@ -176,11 +175,11 @@ class CoursesDatabase:
         try:
             self.cursor.execute("SELECT id, question FROM quizzes WHERE course_id = ?", (course_id,))
             quizzes = self.cursor.fetchall()
-            return quizzes if quizzes else []  # ضمان إرجاع مصفوفة فارغة إذا لم تكن هناك كويزات
+            return quizzes if quizzes else []
         except Exception as e:
             print(f"Error fetching quizzes: {e}")
             return []
 
     def close(self):
-        # إغلاق الاتصال بقاعدة البيانات
+
         self.connection.close()
